@@ -18,12 +18,16 @@ SPACESHIP_RUBY_COLOR="${SPACESHIP_RUBY_COLOR="red"}"
 # Section
 # ------------------------------------------------------------------------------
 
-# Show current version of Ruby
-spaceship_ruby() {
+spaceship_async_job_load_ruby() {
   [[ $SPACESHIP_RUBY_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_ruby_version
+}
+
+# Show current version of Ruby
+spaceship_async_job_ruby_version() {
   # Show versions only for Ruby-specific folders
-  [[ -f Gemfile || -f Rakefile || -n *.rb(#qN^/) ]] || return
+  [[ -f Gemfile || -f Rakefile ]] || return
 
   local 'ruby_version'
 
@@ -50,4 +54,16 @@ spaceship_ruby() {
     "$SPACESHIP_RUBY_PREFIX" \
     "${SPACESHIP_RUBY_SYMBOL}${ruby_version}" \
     "$SPACESHIP_RUBY_SUFFIX"
+}
+
+spaceship_ruby() {
+  [[ $SPACESHIP_ruby_SHOW == false ]] && return
+
+  local ruby_version="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_ruby_version]}"
+
+  [[ -z $ruby_version ]] && return
+
+  spaceship::section \
+    'white' \
+    "${ruby_version}"
 }

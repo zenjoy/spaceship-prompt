@@ -23,10 +23,14 @@ SPACESHIP_KUBECONTEXT_COLOR_GROUPS=(${SPACESHIP_KUBECONTEXT_COLOR_GROUPS=})
 # Section
 # ------------------------------------------------------------------------------
 
-# Show current context in kubectl
-spaceship_kubecontext() {
+spaceship_async_job_load_kubecontext() {
   [[ $SPACESHIP_KUBECONTEXT_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_kubecontext
+}
+
+# Show current context in kubectl
+spaceship_async_job_kubecontext() {
   spaceship::exists kubectl || return
 
   local kube_context=$(kubectl config current-context 2>/dev/null)
@@ -59,4 +63,14 @@ spaceship_kubecontext() {
     "$SPACESHIP_KUBECONTEXT_PREFIX" \
     "${SPACESHIP_KUBECONTEXT_SYMBOL}${kube_context}" \
     "$SPACESHIP_KUBECONTEXT_SUFFIX"
+}
+
+spaceship_kubecontext() {
+  [[ $SPACESHIP_KUBECONTEXT_SHOW == false ]] && return
+
+  local kubecontext="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_kubecontext]}"
+
+  spaceship::section \
+    'white' \
+    "${kubecontext}"
 }

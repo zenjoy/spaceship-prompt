@@ -19,10 +19,14 @@ SPACESHIP_RUST_VERBOSE_VERSION="${SPACESHIP_RUST_VERBOSE_VERSION=false}"
 # Section
 # ------------------------------------------------------------------------------
 
-# Show current version of Rust
-spaceship_rust() {
-  [[ $SPACESHIP_RUST_SHOW == false ]] && return
+spaceship_async_job_load_rust() {
+  [[ $SPACESHIP_rust_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_rust
+}
+
+# Show current version of Rust
+spaceship_async_job_rust() {
   # If there are Rust-specific files in current directory
   [[ -f Cargo.toml || -n *.rs(#qN^/) ]] || return
 
@@ -39,4 +43,14 @@ spaceship_rust() {
     "$SPACESHIP_RUST_PREFIX" \
     "${SPACESHIP_RUST_SYMBOL}v${rust_version}" \
     "$SPACESHIP_RUST_SUFFIX"
+}
+
+spaceship_rust() {
+  [[ $SPACESHIP_RUST_SHOW == false ]] && return
+
+  local rust_version="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_rust]}"
+
+  spaceship::section \
+    'white' \
+    "${rust_version}"
 }

@@ -19,9 +19,13 @@ SPACESHIP_GOLANG_COLOR="${SPACESHIP_GOLANG_COLOR="cyan"}"
 # Section
 # ------------------------------------------------------------------------------
 
-spaceship_golang() {
-  [[ $SPACESHIP_GOLANG_SHOW == false ]] && return
+spaceship_async_job_load_golang() {
+  [[ $SPACESHIP_RUBY_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_golang
+}
+
+spaceship_async_job_golang() {
   # If there are Go-specific files in current directory, or current directory is under the GOPATH
   [[ -f go.mod || -d Godeps || -f glide.yaml || -n *.go(#qN^/) || -f Gopkg.yml || -f Gopkg.lock \
   || ( $GOPATH && "$PWD/" =~ "$GOPATH/" ) ]] || return
@@ -38,4 +42,14 @@ spaceship_golang() {
     "$SPACESHIP_GOLANG_PREFIX" \
     "${SPACESHIP_GOLANG_SYMBOL}${go_version}" \
     "$SPACESHIP_GOLANG_SUFFIX"
+}
+
+spaceship_golang() {
+  [[ $SPACESHIP_GOLANG_SHOW == false ]] && return
+
+  local go_version="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_golang]}"
+
+  spaceship::section \
+    'white' \
+    "${go_version}"
 }

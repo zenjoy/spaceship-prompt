@@ -20,9 +20,13 @@ SPACESHIP_PACKAGE_COLOR="${SPACESHIP_PACKAGE_COLOR="red"}"
 # Section
 # ------------------------------------------------------------------------------
 
-spaceship_package() {
+spaceship_async_job_load_package() {
   [[ $SPACESHIP_PACKAGE_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_package
+}
+
+spaceship_async_job_package() {
   # Show package version only when repository is a package
   local 'package_version'
 
@@ -51,4 +55,14 @@ spaceship_package() {
     "$SPACESHIP_PACKAGE_PREFIX" \
     "${SPACESHIP_PACKAGE_SYMBOL}v${package_version}" \
     "$SPACESHIP_PACKAGE_SUFFIX"
+}
+
+spaceship_package() {
+  [[ $SPACESHIP_PACKAGE_SHOW == false ]] && return
+
+  local package="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_package]}"
+
+  spaceship::section \
+    'white' \
+    "${package}"
 }

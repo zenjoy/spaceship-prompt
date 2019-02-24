@@ -19,12 +19,15 @@ SPACESHIP_NODE_COLOR="${SPACESHIP_NODE_COLOR="green"}"
 # Section
 # ------------------------------------------------------------------------------
 
-# Show current version of node, exception system.
-spaceship_node() {
+spaceship_async_job_load_node() {
   [[ $SPACESHIP_NODE_SHOW == false ]] && return
 
+  async_job spaceship spaceship_async_job_node_version
+}
+
+spaceship_async_job_node_version() {
   # Show NODE status only for JS-specific folders
-  [[ -f package.json || -d node_modules || -n *.js(#qN^/) ]] || return
+  [[ -f package.json || -d node_modules ]] || return
 
   local 'node_version'
 
@@ -44,7 +47,20 @@ spaceship_node() {
 
   spaceship::section \
     "$SPACESHIP_NODE_COLOR" \
+    "${SPACESHIP_NODE_SYMBOL}${node_version}"
+}
+
+# Show current version of node, exception system.
+spaceship_node() {
+  [[ $SPACESHIP_NODE_SHOW == false ]] && return
+
+  local node_version="${SPACESHIP_ASYNC_RESULTS[spaceship_async_job_node_version]}"
+
+  [[ $node_version == $SPACESHIP_NODE_DEFAULT_VERSION ]] && return
+
+  spaceship::section \
+    'white' \
     "$SPACESHIP_NODE_PREFIX" \
-    "${SPACESHIP_NODE_SYMBOL}${node_version}" \
+    "${node_version}" \
     "$SPACESHIP_NODE_SUFFIX"
 }
